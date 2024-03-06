@@ -1,8 +1,12 @@
+import datetime
 from binance.client import Client
 import json
 import pandas as pd
 import websocket #need pip install websocket-client and websocket
 import pprint
+import psycopg2
+from decouple import config
+
 client = Client()
 
 dict_ = client.get_exchange_info()
@@ -15,6 +19,13 @@ print(len(sym))
 sym = [i.lower() + '@kline_1m' for i in sym]
 
 stream_these = "/".join(sym)
+connection = psycopg2.connect(user="postgres",
+                                          password=config("DB"),
+                                          host="127.0.0.1",
+                                          port="5432",
+                                          database="postgres")
+cursor = connection.cursor()    
+
 
 def manipulate(data):
     try:
@@ -30,9 +41,16 @@ def manipulate(data):
 def on_message(ws, message):
     json_message = json.loads(message)
     df = manipulate(json_message)
-    df.to_csv('coinprices.csv',mode='a',header=False)
-    print(df)
 
+    for index, row in df.iterrows():
+        query = "INSERT INTO raw_trade_data (TIME, SYMBOL, PRICE, QUANTITY) VALUES (%s, %s, %s, %s)"
+        record_to_insert = (index, row[1], row[0],23)
+        try:
+            cursor.execute(query, record_to_insert)
+            connection.commit()
+            print("Insertion successful!")
+        except psycopg2.Error as e:
+            print(f"Error during insertion: {e}")
 
 socket = "wss://stream.binance.com:9443/stream?streams="+stream_these
 

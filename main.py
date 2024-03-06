@@ -64,6 +64,7 @@ if __name__ == "__main__":
 
 #docker exec -it timescaledb psql -U postgres
 
+# SELECT * FROM raw_trade_data
 # CREATE TABLE IF NOT EXISTS raw_trade_data (
 #    time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
 #    symbol text NOT NULL,
