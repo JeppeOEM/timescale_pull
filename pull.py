@@ -5,7 +5,7 @@ import pandas as pd
 import websocket #need pip install websocket-client and websocket
 import pprint
 import psycopg2
-from decouple import config
+# from decouple import config
 
 client = Client()
 
@@ -19,11 +19,7 @@ print(len(sym))
 sym = [i.lower() + '@kline_1m' for i in sym]
 
 stream_these = "/".join(sym)
-connection = psycopg2.connect(user="postgres",
-                                          password=config("DB"),
-                                          host="127.0.0.1",
-                                          port="5432",
-                                          database="postgres")
+connection = psycopg2.connect(user="postgres",password="password",host="127.0.0.1",port="5432",database="postgres")
 cursor = connection.cursor()    
 
 

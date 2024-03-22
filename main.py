@@ -1,4 +1,4 @@
-from decouple import config
+# from decouple import config
 from binance import ThreadedWebsocketManager
 import psycopg2
 import datetime
